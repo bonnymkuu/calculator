@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Scientific Calculator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font for a modern look */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(to right, #6dd5ed, #2193b0); /* Gradient background */
+            margin: 0;
+            padding: 20px; /* Add some padding for smaller screens */
+            box-sizing: border-box;
+        }
+        .calculator {
+            background-color: #2d3748; /* Darker background for the calculator */
+            padding: 20px;
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Stronger shadow */
+            width: 100%;
+            max-width: 400px; /* Increased max width for scientific layout */
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            border: 2px solid #4a5568; /* Subtle border */
+        }
+        .calculator-display {
+            width: 100%;
+            background-color: #1a202c; /* Even darker display background */
+            color: #e2e8f0; /* Light text color */
+            font-size: 2.5rem; /* Slightly smaller font for longer expressions */
+            padding: 20px;
+            border-radius: 0.75rem; /* Rounded display */
+            text-align: right;
+            border: none;
+            outline: none;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5); /* Inset shadow for depth */
+            overflow-x: auto; /* Allow horizontal scrolling for long numbers */
+            white-space: nowrap; /* Prevent wrapping */
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        }
+        .calculator-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 columns for scientific layout */
+            gap: 12px; /* Slightly larger gap between buttons */
+        }
+        .calculator-button {
+            background-color: #4a5568; /* Default button color */
+            color: #e2e8f0;
+            font-size: 1.5rem; /* Larger font for buttons */
+            padding: 20px 0; /* More vertical padding */
+            border-radius: 1rem; /* Very rounded buttons */
+            border: none;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out; /* Smooth transitions */
+            /* 3D effect for all buttons */
+            box-shadow:
+                inset 0 2px 5px rgba(255, 255, 255, 0.2), /* Top-left highlight */
+                inset 0 -2px 5px rgba(0, 0, 0, 0.3),    /* Bottom-right inner shadow */
+                0 6px 0px #333a46,                       /* Bottom "depth" shadow */
+                0 8px 15px rgba(0, 0, 0, 0.4);           /* Overall button shadow */
+        }
+        .calculator-button:hover {
+            transform: translateY(-2px); /* Lift effect on hover */
+            box-shadow:
+                inset 0 2px 5px rgba(255, 255, 255, 0.2),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.3),
+                0 8px 0px #333a46,
+                0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+        .calculator-button:active {
+            transform: translateY(4px); /* Press effect */
+            box-shadow:
+                inset 0 2px 5px rgba(255, 255, 255, 0.2),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.3),
+                0 2px 0px #333a46, /* Reduced depth when pressed */
+                0 3px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Specific button styles (with 3D adjustments) */
+        .button-operator {
+            background-color: #f6ad55; /* Orange for operators */
+            color: #2d3748;
+            box-shadow:
+                inset 0 2px 5px rgba(255, 255, 255, 0.3),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.2),
+                0 6px 0px #d47e2c, /* Darker orange for depth */
+                0 8px 15px rgba(0, 0, 0, 0.4);
+        }
+        .button-operator:hover {
+            background-color: #ed8936;
+            box-shadow:
+                inset 0 2px 5px rgba(255, 255, 255, 0.3),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.2),
+                0 8px 0px #d47e2c,
+                0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+        .button-operator:active {
+            background-color: #ed8936;
+            transform: translateY(4px);
+            box-shadow:
+                inset 0 2px 5px rgba(255, 255, 255, 0.3),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.2),
+                0 2px 0px #d47e2c,
+                0 3px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .button-clear {
+            background-color: #e53e3e; /* Red for clear */
+            color: #fff;
+            box-shadow:
+                inset 0 2px 5px rgba(255, 255, 255, 0.3),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.2),
+                0 6px 0px #b72b2b, /* Darker red for depth */
+                0 8px 15px rgba(0, 0, 0, 0.4);
+        }
+        .button-clear:hover {
+            background-color: #c53030;
+            box-shadow:
+                inset 0 2px 5px rgba(255, 255, 255, 0.3),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.2),
+                0 8px 0px #b72b2b,
+                0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+        .button-clear:active {
+            background-color: #c53030;
+            transform: translateY(4px);
+            box-shadow:
+                inset 0 2px 5px rgba(255, 255, 255, 0.3),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.2),
+                0 2px 0px #b72b2b,
+                0 3px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .button-equals {
+            background-color: #48bb78; /* Green for equals */
+            color: #fff;
+            grid-column: span 2; /* Make equals button span two columns */
+            box-shadow:
+                inset 0 2px 5px rgba(255, 255, 255, 0.3),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.2),
+                0 6px 0px #3c9c64, /* Darker green for depth */
+                0 8px 15px rgba(0, 0, 0, 0.4);
+        }
+        .button-equals:hover {
+            background-color: #38a169;
+            box-shadow:
+                inset 0 2px 5px rgba(255, 255, 255, 0.3),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.2),
+                0 8px 0px #3c9c64,
+                0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+        .button-equals:active {
+            background-color: #38a169;
+            transform: translateY(4px);
+            box-shadow:
+                inset 0 2px 5px rgba(255, 255, 255, 0.3),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.2),
+                0 2px 0px #3c9c64,
+                0 3px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .button-zero {
+            grid-column: span 2; /* Make zero button span two columns */
+        }
+
+        .button-scientific {
+            background-color: #5a677d; /* Slightly lighter shade for scientific buttons */
+            box-shadow:
+                inset 0 2px 5px rgba(255, 255, 255, 0.2),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.3),
+                0 6px 0px #414b5a, /* Darker shade for depth */
+                0 8px 15px rgba(0, 0, 0, 0.4);
+        }
+        .button-scientific:hover {
+            background-color: #6a798f;
+            box-shadow:
+                inset 0 2px 5px rgba(255, 255, 255, 0.2),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.3),
+                0 8px 0px #414b5a,
+                0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+        .button-scientific:active {
+            background-color: #6a798f;
+            transform: translateY(4px);
+            box-shadow:
+                inset 0 2px 5px rgba(255, 255, 255, 0.2),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.3),
+                0 2px 0px #414b5a,
+                0 3px 5px rgba(0, 0, 0, 0.3);
+        }
+
+
+        /* Responsive adjustments */
+        @media (max-width: 450px) {
+            .calculator {
+                padding: 15px;
+                border-radius: 1rem;
+                max-width: 100%; /* Allow full width on very small screens */
+            }
+            .calculator-display {
+                font-size: 2rem; /* Adjust font size for smaller screens */
+                padding: 15px;
+            }
+            .calculator-button {
+                font-size: 1.1rem; /* Smaller font for buttons */
+                padding: 15px 0;
+                border-radius: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <!-- Calculator Display -->
+        <input type="text" class="calculator-display" id="display" value="0" readonly>
+
+        <!-- Calculator Buttons -->
+        <div class="calculator-buttons">
+            <!-- Scientific Row 1 -->
+            <button class="calculator-button button-scientific" data-value="(">(</button>
+            <button class="calculator-button button-scientific" data-value=")">)</button>
+            <button class="calculator-button button-scientific" data-value="sqrt">√</button>
+            <button class="calculator-button button-scientific" data-value="^">x<sup>y</sup></button>
+
+            <!-- Scientific Row 2 -->
+            <button class="calculator-button button-scientific" data-value="sin">sin</button>
+            <button class="calculator-button button-scientific" data-value="cos">cos</button>
+            <button class="calculator-button button-scientific" data-value="tan">tan</button>
+            <button class="calculator-button button-scientific" data-value="log">log</button>
+
+            <!-- Top Row -->
+            <button class="calculator-button button-clear" data-value="C">C</button>
+            <button class="calculator-button button-operator" data-value="DEL">DEL</button>
+            <button class="calculator-button button-operator" data-value="%">%</button>
+            <button class="calculator-button button-operator" data-value="/">/</button>
+
+            <!-- Number Rows -->
+            <button class="calculator-button" data-value="7">7</button>
+            <button class="calculator-button" data-value="8">8</button>
+            <button class="calculator-button" data-value="9">9</button>
+            <button class="calculator-button button-operator" data-value="*">x</button>
+
+            <button class="calculator-button" data-value="4">4</button>
+            <button class="calculator-button" data-value="5">5</button>
+            <button class="calculator-button" data-value="6">6</button>
+            <button class="calculator-button button-operator" data-value="-">-</button>
+
+            <button class="calculator-button" data-value="1">1</button>
+            <button class="calculator-button" data-value="2">2</button>
+            <button class="calculator-button" data-value="3">3</button>
+            <button class="calculator-button button-operator" data-value="+">+</button>
+
+            <!-- Bottom Row -->
+            <button class="calculator-button button-zero" data-value="0">0</button>
+            <button class="calculator-button" data-value=".">.</button>
+            <button class="calculator-button button-equals" data-value="=">=</button>
+            <button class="calculator-button button-scientific" data-value="ln">ln</button>
+        </div>
+    </div>
+
+    <script>
+        // Get references to the display and all buttons
+        const display = document.getElementById('display');
+        const buttons = document.querySelectorAll('.calculator-button');
+
+        let currentExpression = '0'; // Stores the entire expression being built
+
+        // Function to update the display
+        function updateDisplay() {
+            display.value = currentExpression;
+        }
+
+        // Function to handle button clicks
+        function handleButtonClick(value) {
+            if (value === 'C') {
+                currentExpression = '0';
+            } else if (value === 'DEL') {
+                if (currentExpression.length > 1 && currentExpression !== 'Error') {
+                    currentExpression = currentExpression.slice(0, -1);
+                } else {
+                    currentExpression = '0';
+                }
+            } else if (value === '=') {
+                try {
+                    // Prepare expression for evaluation
+                    let expressionToEvaluate = currentExpression;
+
+                    // Replace 'x' with '*' for multiplication
+                    expressionToEvaluate = expressionToEvaluate.replace(/x/g, '*');
+                    // Replace '^' with '**' for power
+                    expressionToEvaluate = expressionToEvaluate.replace(/\^/g, '**');
+                    // Replace scientific functions with Math equivalents, ensuring correct casing and parentheses
+                    expressionToEvaluate = expressionToEvaluate.replace(/sin\(/g, 'Math.sin(');
+                    expressionToEvaluate = expressionToEvaluate.replace(/cos\(/g, 'Math.cos(');
+                    expressionToEvaluate = expressionToEvaluate.replace(/tan\(/g, 'Math.tan(');
+                    expressionToEvaluate = expressionToEvaluate.replace(/sqrt\(/g, 'Math.sqrt(');
+                    expressionToEvaluate = expressionToEvaluate.replace(/log\(/g, 'Math.log10('); // Common log (base 10)
+                    expressionToEvaluate = expressionToEvaluate.replace(/ln\(/g, 'Math.log(');    // Natural log (base e)
+
+                    // Evaluate the expression
+                    let result = eval(expressionToEvaluate);
+
+                    // Handle potential infinity or NaN results
+                    if (!isFinite(result) || isNaN(result)) {
+                        currentExpression = 'Error';
+                    } else {
+                        currentExpression = String(result);
+                    }
+                } catch (e) {
+                    currentExpression = 'Error';
+                }
+            } else if (['sin', 'cos', 'tan', 'sqrt', 'log', 'ln'].includes(value)) {
+                // If current display is '0' or 'Error', start fresh with the function
+                if (currentExpression === '0' || currentExpression === 'Error') {
+                    currentExpression = value + '(';
+                } else {
+                    // Append function name and opening parenthesis
+                    currentExpression += value + '(';
+                }
+            } else if (value === 'pi') {
+                if (currentExpression === '0' || currentExpression === 'Error') {
+                    currentExpression = String(Math.PI);
+                } else {
+                    currentExpression += String(Math.PI);
+                }
+            } else if (value === 'e') {
+                if (currentExpression === '0' || currentExpression === 'Error') {
+                    currentExpression = String(Math.E);
+                } else {
+                    currentExpression += String(Math.E);
+                }
+            } else {
+                // For numbers, operators, and parentheses
+                if (currentExpression === '0' || currentExpression === 'Error') {
+                    currentExpression = value;
+                } else {
+                    currentExpression += value;
+                }
+            }
+            updateDisplay();
+        }
+
+        // Add event listeners to all buttons
+        buttons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                const { value } = event.target.dataset; // Get the data-value attribute
+                if (value) {
+                    handleButtonClick(value);
+                }
+            });
+        });
+
+        // Initialize display on load
+        updateDisplay();
+    </script>
+</body>
+</html>
