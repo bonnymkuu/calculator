@@ -41,8 +41,6 @@ Here’s a preview of the calculator:
 
 ![Calculator Screenshot](./calc.png)
 
-> Make sure `calc.png` is placed in the **root** of the repository for the image to load correctly on GitHub.
-
 ---
 
 ## 🚀 Getting Started
